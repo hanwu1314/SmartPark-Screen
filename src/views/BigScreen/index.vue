@@ -1,15 +1,27 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useParkInfo, useInitBarChart, useInitPieChart } from '@/hooks'
-
+import { Application } from '@splinetool/runtime'
 const { parkInfo, getUserInfo } = useParkInfo()
 const { initBarChart, barChart } = useInitBarChart(parkInfo)
 const { initPieChart, pieChart } = useInitPieChart(parkInfo)
+
+// 初始化3d模型
+const ref3d = ref(null)
+const init3dModel = () => {
+  // 实例化解析器实例
+  let spline = new Application(ref3d.value)
+  // 拉取模型
+  spline.load('https://fe-hmzs.itheima.net/scene.splinecode').then(() => {
+    console.log('3D模型加载并渲染完毕')
+  })
+}
 
 onMounted(async () => {
   await getUserInfo()
   initBarChart()
   initPieChart()
+  init3dModel()
 })
 </script>
 
@@ -78,6 +90,10 @@ onMounted(async () => {
         alt="" />
       <div class="pie-chart" ref="pieChart"></div>
     </div>
+  </div>
+  <div class="model-container">
+    <!-- 准备3D渲染节点 -->
+    <canvas class="canvas-3d" ref="ref3d" />
   </div>
 </template>
 
@@ -184,5 +200,12 @@ onMounted(async () => {
     width: 80%;
     height: calc(100% - 40px);
   }
+}
+
+.model-container {
+  height: 100%;
+  background-color: black;
+  width: 100%;
+  flex-shrink: 0;
 }
 </style>
