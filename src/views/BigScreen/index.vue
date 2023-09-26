@@ -2,18 +2,23 @@
 import { onMounted, ref } from 'vue'
 import { useParkInfo, useInitBarChart, useInitPieChart } from '@/hooks'
 import { Application } from '@splinetool/runtime'
+import Loading from '@/component/Loading.vue'
 const { parkInfo, getUserInfo } = useParkInfo()
 const { initBarChart, barChart } = useInitBarChart(parkInfo)
 const { initPieChart, pieChart } = useInitPieChart(parkInfo)
 
+const isShowLoading = ref(false)
+
 // 初始化3d模型
 const ref3d = ref(null)
 const init3dModel = () => {
+  isShowLoading.value = true
   // 实例化解析器实例
   let spline = new Application(ref3d.value)
   // 拉取模型
   spline.load('https://fe-hmzs.itheima.net/scene.splinecode').then(() => {
-    console.log('3D模型加载并渲染完毕')
+    // console.log('3D模型加载并渲染完毕')
+    isShowLoading.value = false
   })
 }
 
@@ -26,6 +31,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Loading :loading="isShowLoading" />
   <div class="all-charts">
     <!-- 园区概况 -->
     <div class="section-one">
